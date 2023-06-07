@@ -133,7 +133,7 @@ import { NuxtLink } from '../.nuxt/components'; import useUserStore from
         <NuxtLink to="/shoppingcart" class="flex items-center">
           <button
             class="relative md:block hidden"
-            @mouseenter="isCartHover"
+            @mouseenter="isCartHover = true"
             @mouseleave="isCartHover = false"
           >
             <span
