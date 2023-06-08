@@ -81,7 +81,7 @@ let currentImage = ref("");
 let isInCart = computed(() => {
   let res = false;
   userStore.cart.forEach((prod) => {
-    if (route.param.id == prod.id) res = true;
+    if (route.params.id == prod.id) res = true;
   });
   return res;
 });
