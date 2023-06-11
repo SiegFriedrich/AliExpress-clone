@@ -18,7 +18,7 @@ export const useUserStore = defineStore('user',{
             url: "https://picsum.photos/id/45/800/800",
             price: 9099,
           },],
-        checkout: [],
+        checkout: [{}],
     }),
     persist:true
 })

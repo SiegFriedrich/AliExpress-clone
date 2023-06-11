@@ -31,7 +31,7 @@ import MainLayout from '~/layouts/MainLayout.vue';
                 <CartItem
                   :product="product"
                   :selectedArray="selectedArray"
-                  @selectedRadio="selectedRadio"
+                  @selectedRadio="selectedRadioFunc"
                 />
               </div>
             </div>
@@ -72,31 +72,47 @@ import MainLayout from '~/layouts/MainLayout.vue';
 <script setup lang="ts">
 import MainLayout from "~/layouts/MainLayout.vue";
 import CartItem from "~/components/CartItem.vue";
-const selectedArray = ref("");
-const selectedRadio = () => {};
+import { useGlobalStore } from "~/stores/global";
+import { useUserStore } from "~/stores/user";
+
+const globalStore = useGlobalStore();
+const userStore = useUserStore();
+const selectedArray = ref<any[]>([]);
+
+const products = ref(userStore.cart);
+
+const selectedRadioFunc = (e: any) => {
+  if (!selectedArray.value.length) selectedArray.value.push(e);
+  return;
+  selectedArray.value.forEach((item, index) => {
+    if (e.id != item.id) selectedArray.value.push(e);
+    else selectedArray.value.splice(index, 1);
+  });
+};
+
+const goToCheckout = () => {
+  let ids: any[] = [];
+  userStore.checkout = [];
+
+  selectedArray.value.forEach((item) => ids.push(item.id));
+  let res = userStore.cart.filter((item) => {
+    return ids.indexOf(item.id) != -1;
+  });
+
+  res.forEach((item) => userStore.checkout.push(toRaw(item)));
+
+  return navigateTo("/checkout");
+};
 
 const cards = ref(["visa.png", "mastercard.png", "paypal.png", "applepay.png"]);
-
-const products = ref([
-  {
-    id: 6,
-    title: "Product6",
-    description: "Product 6",
-    url: "https://picsum.photos/id/90/800/800",
-    price: 7789,
-  },
-  {
-    id: 7,
-    title: "Product7",
-    description: "Product 7",
-    url: "https://picsum.photos/id/45/800/800",
-    price: 9099,
-  },
-]);
+onMounted(() => {
+  setTimeout(() => (globalStore.isLoading = false), 500);
+});
 
 const totalPriceComputed = computed(() => {
   let res = 0;
-  products.value.forEach((prod) => (res += prod.price));
+  // products.value.forEach((prod) => (res += prod.price));
+  userStore.cart.forEach((prod) => (res += prod.price));
   return res / 100;
 });
 </script>
